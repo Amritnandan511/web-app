@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Twitter-Inspired Web App with Trending Page</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: #e6ecf0;
+      color: #14171a;
+      flex-direction: column;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-around;
+      background-color: #1da1f2;
+      padding: 15px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .navbar p {
+      cursor: pointer;
+    }
+
+    .navbar p:hover {
+      text-decoration: underline;
+    }
+
+    .content {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .sidebar {
+      width: 20%;
+      background-color: white;
+      padding: 20px;
+      border-right: 1px solid #ccc;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 20px;
+      color: #1da1f2;
+    }
+
+    .sidebar p {
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .sidebar p:hover {
+      background-color: #f5f8fa;
+      border-radius: 5px;
+    }
+
+    .feed, .trending {
+      width: 60%;
+      padding: 20px;
+      background-color: white;
+      position: relative;
+    }
+
+    .home-bar {
+      font-size: 1.2em;
+      color: #1da1f2;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .tweet-box {
+      margin-bottom: 20px;
+    }
+
+    .tweet-box textarea {
+      width: 100%;
+      padding: 10px;
+      resize: none;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .tweet-box button {
+      margin-top: 10px;
+      background-color: #1da1f2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tweet-box button:hover {
+      background-color: #1991c0;
+      transform: scale(1.05);
+    }
+
+    .tweet {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #f5f8fa;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .tweet:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .tweet .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .tweet .actions button {
+      background: none;
+      border: none;
+      color: #1da1f2;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .rightbar {
+      width: 20%;
+      padding: 20px;
+      background-color: white;
+    }
+
+    .comment-box {
+      margin-top: 10px;
+      display: none;
+    }
+
+    .comment-box input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .user-profile img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .user-profile span {
+      font-weight: bold;
+    }
+
+    .home-bar span {
+      font-weight: normal;
+      color: #657786;
+    }
+
+    .trending p {
+      font-size: 1.2em;
+      margin: 10px 0;
+      cursor: pointer;
+      color: #1da1f2;
+    }
+
+    .trending p:hover {
+      color: #1991c0;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <p onclick="showHome()">Home</p>
+    <p onclick="showTrending()">Trending</p>
+  </div>
+
+  <div id="homePage" class="content">
+    <div class="sidebar">
+      <h2>Twitter</h2>
+      <p onclick="goToHome()">Home</p>
+      <p>Explore</p>
+      <p>Notifications</p>
+      <p>Messages</p>
+    </div>
+
+    <div class="feed">
+      <div class="home-bar">
+        <span>Home</span> <span id="tweetCount">0</span> Tweets
+      </div>
+
+      <div class="user-profile">
+        <img src="https://i.pinimg.com/originals/a3/d7/1e/a3d71ecb981b3b981db65fc83581ad45.png" alt="User Avatar"/>
+        <span>User Name</span>
+      </div>
+
+      <div class="tweet-box">
+        <textarea id="tweetInput" rows="3" placeholder="What's happening?"></textarea>
+        <button onclick="postTweet()">Tweet</button>
+      </div>
+
+      <div id="tweets"></div>
+    </div>
+
+    <div class="rightbar">
+      <h3>Trending</h3>
+      <p>#OpenAI</p>
+      <p>#JavaScript</p>
+      <p>#WebDevelopment</p>
+    </div>
+  </div>
+
+  <div id="trendingPage" class="content" style="display:none;">
+    <div class="sidebar">
+      <h2>Twitter</h2>
+      <p>Home</p>
+      <p>Explore</p>
+      <p>Notifications</p>
+      <p>Messages</p>
+    </div>
+
+    <div class="trending">
+      <h2>Trending Topics</h2>
+      <p>#Technology</p>
+      <p>#AI</p>
+      <p>#Crypto</p>
+      <p>#SocialMedia</p>
+      <p>#DigitalTransformation</p>
+    </div>
+  </div>
+
+  <script>
+    const tweetsContainer = document.getElementById('tweets');
+    const tweetCount = document.getElementById('tweetCount');
+    
+    function goToHome() {
+      alert("You are already on the Home page!");
+    }
+
+    function postTweet() {
+      const text = document.getElementById('tweetInput').value.trim();
+      if (text === '') return;
+
+      const tweet = document.createElement('div');
+      tweet.className = 'tweet';
+      tweet.innerHTML = `
+        <div class="user-profile">
+          <img src="133829874697765736.jpg" alt="User Avatar"/>
+          <span>User Name</span>
+        </div>
+        <p>${text}</p>
+        <div class="actions">
+          <button onclick="likeTweet(this)">❤️ Like</button>
+          <button onclick="toggleCommentBox(this)">💬 Comment</button>
+        </div>
+        <div class="comment-box">
+          <input type="text" placeholder="Write a comment..."/>
+        </div>
+      `;
+      tweetsContainer.prepend(tweet);
+
+      // Update tweet count
+      const tweetCountValue = parseInt(tweetCount.textContent);
+      tweetCount.textContent = tweetCountValue + 1;
+
+      // Reset the input field
+      document.getElementById('tweetInput').value = '';
+    }
+
+    function likeTweet(button) {
+      if (button.textContent.includes('❤️')) {
+        button.textContent = '💙 Liked';
+      } else {
+        button.textContent = '❤️ Like';
+      }
+    }
+
+    function toggleCommentBox(button) {
+      const commentBox = button.closest('.tweet').querySelector('.comment-box');
+      commentBox.style.display = commentBox.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Show Home Page
+    function showHome() {
+      document.getElementById('homePage').style.display = 'flex';
+      document.getElementById('trendingPage').style.display = 'none';
+    }
+
+    // Show Trending Page
+    function showTrending() {
+      document.getElementById('homePage').style.display = 'none';
+      document.getElementById('trendingPage').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>
